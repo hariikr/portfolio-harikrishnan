@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0c0a">
+<meta property="og:title" content="Harikrishnan Aneesh">
+<meta property="og:description" content="Software engineer building LLM agents and the systems under them. Flutter, Rust, Supabase.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0c0a'/%3E%3Ctext x='16' y='22' font-size='16' font-family='monospace' font-weight='700' text-anchor='middle' fill='%23c4ff4d'%3EH%3C/text%3E%3C/svg%3E">
+<title>Harikrishnan Aneesh</title>
+<meta name="description" content="Software engineer building LLM agents and the systems under them. Flutter, Rust, Supabase.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: one dark terminal-and-grid world. Fixed canvas field behind everything, sticky mono header,
+   terminal card + oversized hero, marquee, then about / stack / experience / work / contact bands. */
+:root{
+  --bg:#0b0c0a; --bg-2:#121410; --bg-3:#1a1d17;
+  --line:rgba(240,244,236,.08); --line-2:rgba(240,244,236,.16);
+  --text:#f2f4ef; --muted:#a3a89c; --faint:#5c6256;
+  --lime:#c4ff4d; --lime-rgb:196,255,77; --on-lime:#10140a; --warm:#ff7a45;
+  --sans:'Space Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+h1,h2,h3,p,ul,figure{margin:0}
+a{color:inherit}
+::selection{background:var(--lime);color:var(--on-lime)}
+:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));position:relative}
+.em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.lime{color:var(--lime)}
+
+/* ambient layers */
+#field{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.veil{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 80% at 50% 0%,transparent 0,rgba(11,12,10,.35) 60%,rgba(11,12,10,.75) 100%)}
+.noise{position:fixed;inset:-50%;z-index:1;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+main,header,footer{position:relative;z-index:2}
+.progress{position:fixed;left:0;top:env(safe-area-inset-top,0px);height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:var(--lime);z-index:70;box-shadow:0 0 12px rgba(var(--lime-rgb),.6)}
+
+/* cursor follower */
+.cur{position:fixed;left:0;top:0;z-index:80;pointer-events:none;border-radius:50%;transform:translate(-100px,-100px)}
+.cur-dot{width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--lime)}
+.cur-ring{width:36px;height:36px;margin:-18px 0 0 -18px;border:1px solid rgba(var(--lime-rgb),.55);transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease),background-color .35s,border-color .35s}
+.cur-ring.big{width:96px;height:96px;margin:-48px 0 0 -48px;background:var(--text);border-color:transparent;mix-blend-mode:difference}
+.cur-ring.link{width:56px;height:56px;margin:-28px 0 0 -28px;background:rgba(var(--lime-rgb),.12);border-color:var(--lime)}
+@media (pointer:coarse),(prefers-reduced-motion:reduce){.cur{display:none}}
+
+/* loader */
+.loader{position:fixed;inset:0;z-index:90;background:var(--bg);display:flex;flex-direction:column;justify-content:flex-end;gap:18px;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));padding-bottom:calc(36px + env(safe-area-inset-bottom,0px));transition:opacity .6s var(--ease),visibility .6s}
+.loader.done{opacity:0;visibility:hidden}
+.loader .tag{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.loader .tag b{color:var(--lime);font-weight:500}
+.loader .pct{font-family:var(--serif);font-style:italic;font-size:clamp(84px,18vw,220px);line-height:.85;color:var(--lime);font-variant-numeric:tabular-nums;animation:pulse 1.4s ease-in-out infinite}
+.loader .bar{height:2px;background:var(--line);position:relative;overflow:hidden}
+.loader .bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--lime)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
+@media (prefers-reduced-motion:reduce){.loader{display:none}}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(11,12,10,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;gap:16px}
+.logo{font-family:var(--mono);font-weight:600;font-size:15px;color:var(--lime);text-decoration:none;white-space:nowrap}
+.logo span{color:var(--muted);font-weight:400}
+.nav{display:flex;gap:4px}
+.nav a{font-family:var(--mono);font-size:13px;color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;transition:color .2s}
+.nav a:hover,.nav a.on{color:var(--text)}
+.nav a.on::before{content:"● ";color:var(--lime);font-size:9px;vertical-align:2px}
+.menu-btn{display:none;width:52px;height:52px;border-radius:14px;border:1px solid var(--line-2);background:var(--bg-2);cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+.menu-btn i{display:block;width:22px;height:1.5px;background:var(--lime);transition:transform .3s var(--ease),opacity .2s}
+.menu-btn i:nth-child(2){width:14px;transform:translateX(4px)}
+.menu-btn[aria-expanded="true"] i:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.menu-btn[aria-expanded="true"] i:nth-child(2){opacity:0}
+.menu-btn[aria-expanded="true"] i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+/* mobile menu overlay */
+.overlay{position:fixed;inset:0;z-index:45;background:rgba(11,12,10,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-top:calc(96px + env(safe-area-inset-top,0px));padding-bottom:calc(28px + env(safe-area-inset-bottom,0px));opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s;overflow:auto}
+.overlay.open{opacity:1;visibility:visible}
+.overlay .label{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.12em;margin-bottom:12px}
+.overlay ol{list-style:none;padding:0;margin:0 0 36px;display:flex;flex-direction:column}
+.overlay ol a{display:flex;align-items:baseline;gap:18px;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;font-size:clamp(30px,8vw,44px);font-weight:500;letter-spacing:-.03em;transform:translateY(12px);opacity:0;transition:transform .5s var(--ease),opacity .5s var(--ease),color .2s}
+.overlay.open ol a{transform:none;opacity:1}
+.overlay ol a small{font-family:var(--mono);font-size:13px;color:var(--lime);letter-spacing:0}
+.overlay ol a:hover{color:var(--lime)}
+.overlay .out{display:flex;flex-direction:column;gap:10px;font-family:var(--mono);font-size:14px;color:var(--muted)}
+.overlay .out a{text-decoration:none;overflow-wrap:anywhere}
+.overlay .out a:hover{color:var(--lime)}
+
+/* hero */
+.hero{padding-block:56px 48px;display:flex;flex-direction:column;gap:40px}
+.term{max-width:640px;background:rgba(18,20,16,.82);border:1px solid var(--line-2);border-radius:16px;padding:18px 22px 22px;font-family:var(--mono);font-size:14.5px;line-height:1.9;backdrop-filter:blur(6px);box-shadow:0 30px 80px -40px rgba(0,0,0,.8)}
+.term-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.dots{display:flex;gap:8px;flex:none}
+.dots i{width:12px;height:12px;border-radius:50%;background:#ff5f57}
+.dots i:nth-child(2){background:#febc2e}
+.dots i:nth-child(3){background:#28c840}
+.term-bar span{font-size:12px;color:var(--faint)}
+.term p{white-space:pre-wrap;overflow-wrap:anywhere}
+.term .ps{color:var(--lime);font-weight:600}
+.term .c{color:var(--faint);font-style:italic}
+.term .k{color:var(--warm)}
+.term .s{color:#ffd479}
+.term .n{color:var(--lime)}
+.caret{display:inline-block;width:9px;height:17px;background:var(--lime);vertical-align:-3px;animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hero h1{font-size:clamp(44px,8.2vw,118px);font-weight:500;line-height:.96;letter-spacing:-.045em;max-width:16ch;text-wrap:balance}
+.hero h1 .em{font-size:1.06em;letter-spacing:-.02em}
+.hero-foot{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px 56px;align-items:end}
+.hero-side{display:flex;flex-direction:column;gap:22px}
+.lead{font-size:clamp(18px,2vw,21px);color:var(--muted);max-width:56ch}
+.lead b{color:var(--text);font-weight:600}
+.where{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.where .live{color:var(--lime)}
+.where .live::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--lime);margin-right:10px;animation:ping 2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(var(--lime-rgb),.55)}80%,100%{box-shadow:0 0 0 10px rgba(var(--lime-rgb),0)}}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:500 14px var(--mono);display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:999px;border:1px solid var(--line-2);background:rgba(18,20,16,.6);color:var(--text);text-decoration:none;cursor:pointer;transition:border-color .2s,background-color .2s,transform .2s var(--ease),box-shadow .3s}
+.btn:hover{border-color:var(--lime);transform:translateY(-2px)}
+.btn.primary{background:var(--lime);border-color:var(--lime);color:var(--on-lime);font-weight:600}
+.btn.primary:hover{box-shadow:0 10px 40px -10px rgba(var(--lime-rgb),.7)}
+.btn .arr{transition:transform .25s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+
+/* marquee */
+.marquee{position:relative;z-index:2;border-block:1px solid var(--line);background:rgba(18,20,16,.55);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.track{display:flex;width:max-content;animation:scrollx 38s linear infinite}
+.marquee:hover .track{animation-play-state:paused}
+.track span{font-size:clamp(20px,2.6vw,30px);font-weight:500;letter-spacing:-.02em;padding:22px 0;white-space:nowrap;display:flex;align-items:center}
+.track span::after{content:"✦";color:var(--lime);font-size:.55em;margin:0 30px}
+.track span:nth-child(3n+2){font-family:var(--serif);font-style:italic;font-weight:400;color:var(--muted)}
+@keyframes scrollx{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.track{animation:none}}
+
+/* sections */
+section.band{padding-block:120px 40px;scroll-margin-top:72px}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--lime);margin-bottom:22px;display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--lime)}
+h2.big{font-size:clamp(36px,5.6vw,76px);font-weight:500;line-height:1.02;letter-spacing:-.04em;max-width:18ch;text-wrap:balance}
+h2.big .em{font-size:1.05em}
+
+/* about */
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px 64px;margin-top:56px}
+.about-side{display:flex;flex-direction:column;gap:16px}
+.say{font-family:var(--serif);font-size:clamp(24px,2.6vw,32px);line-height:1.25;color:var(--text)}
+.say .em{color:var(--lime)}
+.about-side p{color:var(--muted)}
+.about-side b{color:var(--text);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:72px;border-top:1px solid var(--line)}
+.stat{padding:36px 16px 8px;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;min-width:0}
+.stat:last-child{border-right:0}
+.stat .num{font-family:var(--serif);font-style:italic;font-size:clamp(52px,7vw,96px);line-height:.9;color:var(--lime);font-variant-numeric:tabular-nums}
+.stat .lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);max-width:20ch}
+.facts{margin:64px 0 0;border-top:1px solid var(--line)}
+.fact{display:grid;grid-template-columns:180px minmax(0,1fr);gap:8px 24px;padding:18px 12px;border-bottom:1px solid var(--line);transition:background .3s,padding-left .3s var(--ease)}
+.fact:hover,.srow:hover{background:linear-gradient(90deg,rgba(var(--lime-rgb),.07),transparent 65%);padding-left:22px}
+.fact dt{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding-top:3px}
+.fact dd{margin:0;font-size:18px}
+.fact dd .live{color:var(--lime)}
+
+/* stack */
+.stack-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:48px;margin-top:56px;border-top:1px solid var(--line)}
+.srow{display:grid;grid-template-columns:48px minmax(0,1fr);gap:4px 16px;padding:24px 12px;border-bottom:1px solid var(--line);transition:background .3s,padding-left .3s var(--ease)}
+.srow .ix{font-family:var(--mono);font-size:12.5px;color:var(--lime);padding-top:7px}
+.srow h3{font-size:24px;font-weight:500;letter-spacing:-.02em}
+.srow p{grid-column:2;font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+/* experience */
+.tl{margin-top:56px}
+.job{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px 48px;padding-block:44px;border-top:1px solid var(--line)}
+.job .when{font-family:var(--mono);font-size:13px;color:var(--muted);padding-top:10px}
+.job .when .now{color:var(--lime)}
+.job .when .now::after{content:" ●";animation:blink 1.6s steps(1) infinite}
+.job h3{font-size:clamp(28px,3.4vw,42px);font-weight:500;letter-spacing:-.035em;line-height:1.1}
+.job .org{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:8px}
+.job ul{list-style:none;padding:0;margin-top:20px;display:flex;flex-direction:column;gap:10px;color:var(--muted);max-width:68ch}
+.job li{display:grid;grid-template-columns:22px minmax(0,1fr)}
+.job li::before{content:"→";color:var(--lime);font-family:var(--mono);font-size:14px;padding-top:2px}
+.job li b{color:var(--text);font-weight:500}
+
+/* work */
+.work{display:flex;flex-direction:column;gap:110px;margin-top:72px}
+.case{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px 64px;align-items:center}
+.case:nth-child(even) .win{order:2}
+.win{background:rgba(18,20,16,.85);border:1px solid var(--line-2);border-radius:16px;overflow:hidden;min-width:0;transition:transform .5s var(--ease),border-color .4s,box-shadow .5s;box-shadow:0 40px 90px -50px rgba(0,0,0,.9)}
+.case:hover .win{transform:translateY(-6px) rotate(-.3deg);border-color:rgba(var(--lime-rgb),.45);box-shadow:0 50px 100px -50px rgba(var(--lime-rgb),.25)}
+.win-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.win-bar .dots i{width:10px;height:10px;background:var(--faint);transition:background-color .3s}
+.case:hover .win-bar .dots i:nth-child(1){background:#ff5f57}
+.case:hover .win-bar .dots i:nth-child(2){background:#febc2e}
+.case:hover .win-bar .dots i:nth-child(3){background:#28c840}
+.url{font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--bg-3);border:1px solid var(--line);border-radius:6px;padding:3px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.dg{padding:22px;background:radial-gradient(120% 120% at 0% 0%,rgba(var(--lime-rgb),.06),transparent 55%)}
+.dg svg{display:block;width:100%;height:auto}
+.dg rect{fill:var(--bg-3);stroke:var(--line-2);stroke-width:1}
+.dg rect.hi{stroke:var(--lime);stroke-width:1.4;fill:rgba(var(--lime-rgb),.06)}
+.dg text{fill:var(--text);font-family:var(--mono);font-size:11px}
+.dg text.m{fill:var(--muted);font-size:10px}
+.dg .ln{stroke:var(--muted);stroke-width:1.2;fill:none}
+.dg .ln.hi{stroke:var(--lime)}
+.dg .ah{fill:var(--muted)}
+.dg .flow{stroke-dasharray:4 5;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-18}}
+@media (prefers-reduced-motion:reduce){.dg .flow{animation:none}}
+.case .txt{display:flex;flex-direction:column;gap:16px;min-width:0}
+.cat{font-family:var(--mono);font-size:12.5px;color:var(--lime);letter-spacing:.06em}
+.case h3{font-size:clamp(34px,4vw,52px);font-weight:500;letter-spacing:-.04em;line-height:1}
+.case h3 a{text-decoration:none}
+.case h3 a:hover{color:var(--lime)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:4px 12px}
+.case p{color:var(--muted)}
+.case ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15.5px;color:var(--muted)}
+.case li{display:grid;grid-template-columns:20px minmax(0,1fr)}
+.case li::before{content:"↳";color:var(--lime);font-family:var(--mono);font-size:13px;padding-top:2px}
+.go{font-family:var(--mono);font-size:13.5px;color:var(--lime);text-decoration:none;display:inline-flex;gap:8px;align-items:center;align-self:flex-start;border-bottom:1px solid rgba(var(--lime-rgb),.35);padding-bottom:2px}
+.go:hover{border-color:var(--lime)}
+
+/* contact */
+.contact{padding-block:160px 120px;text-align:center;scroll-margin-top:72px}
+.contact .wrap{display:flex;flex-direction:column;align-items:center;gap:28px}
+.contact .eyebrow{justify-content:center;margin-bottom:0}
+.contact .eyebrow::before{display:none}
+.contact h2{font-size:clamp(40px,7vw,104px);font-weight:500;line-height:.98;letter-spacing:-.045em;max-width:15ch;text-wrap:balance}
+.mail{font:600 clamp(15px,2vw,19px) var(--mono);display:inline-flex;align-items:center;gap:14px;padding:18px 28px;border-radius:999px;border:0;background:var(--lime);color:var(--on-lime);cursor:pointer;transition:transform .25s var(--ease),box-shadow .3s;max-width:100%}
+.mail:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 16px 60px -12px rgba(var(--lime-rgb),.75)}
+.mail .t{overflow-wrap:anywhere;min-width:0}
+.mail .arr{transition:transform .25s var(--ease)}
+.mail:hover .arr{transform:translateX(6px)}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 32px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.links a{text-decoration:none;border-bottom:1px solid transparent;overflow-wrap:anywhere}
+.links a:hover{color:var(--lime);border-color:var(--lime)}
+footer{border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding-block:28px calc(28px + env(safe-area-inset-bottom,0px));font-family:var(--mono);font-size:12.5px;color:var(--faint)}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);background:var(--lime);color:var(--on-lime);font:600 14px var(--mono);padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--ease);z-index:95;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* reveal: only below-the-fold elements start offset, and each is released when it scrolls in */
+.rv{transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.pre{opacity:0;transform:translateY(28px)}
+
+@media (max-width:900px){
+  .hero-foot,.about-grid,.case,.job{grid-template-columns:minmax(0,1fr)}
+  .case:nth-child(even) .win{order:0}
+  .stack-grid{grid-template-columns:minmax(0,1fr)}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat:nth-child(2){border-right:0}
+  .stat:nth-child(-n+2){border-bottom:1px solid var(--line);padding-bottom:28px}
+  .job .when{padding-top:0}
+  section.band{padding-block:88px 24px}
+}
+@media (max-width:760px){
+  .nav{display:none}
+  .menu-btn{display:flex}
+  .fact{grid-template-columns:minmax(0,1fr);gap:2px}
+  .work{gap:80px}
+  .contact{padding-block:110px 80px}
+  .term{font-size:13px;padding:14px 16px 16px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition-duration:.01ms!important}.pre{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="cur cur-ring" id="ring" aria-hidden="true"></div>
+<div class="cur cur-dot" id="dot" aria-hidden="true"></div>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="tag"><b>~/harikrishnan</b> booting portfolio</div>
+  <div class="pct" id="pct">000</div>
+  <div class="bar"><i id="fill"></i></div>
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top">~/harikrishnan<span>_aneesh</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#about">about</a>
+      <a href="#stack">stack</a>
+      <a href="#experience">experience</a>
+      <a href="#work">work</a>
+      <a href="#contact">contact</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="overlay"><i></i><i></i><i></i></button>
+  </div>
+</header>
+
+<div class="overlay" id="overlay">
+  <div class="wrap">
+    <div class="label">— NAVIGATION</div>
+    <ol>
+      <li><a href="#about"><small>01</small>about</a></li>
+      <li><a href="#stack"><small>02</small>stack</a></li>
+      <li><a href="#experience"><small>03</small>experience</a></li>
+      <li><a href="#work"><small>04</small>work</a></li>
+      <li><a href="#contact"><small>05</small>contact</a></li>
+    </ol>
+    <div class="out">
+      <a href="#contact">harikrishnananish0@gmail.com →</a>
+      <a href="https://github.com/hariikr">github.com/hariikr →</a>
+      <a href="https://linkedin.com/in/harikrishnan-aneesh-823087216/">linkedin.com/in/harikrishnan-aneesh →</a>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+  <div class="wrap">
+    <section class="hero" aria-label="Introduction">
+      <div class="term" aria-label="Terminal introduction">
+        <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span>~ hari.dev — zsh</span></div>
+        <p><span class="ps">$</span> whoami</p>
+        <p>→ harikrishnan_aneesh <span class="c">// software engineer</span></p>
+        <p><span class="ps">$</span> cat profile.<span class="k">json</span></p>
+        <p>{ <span class="s">"focus"</span>: <span class="s">"llm agents"</span>, <span class="s">"commits"</span>: <span class="n">400</span> }</p>
+        <p><span class="ps">$</span> <span class="caret"></span></p>
+      </div>
+
+      <h1>I build the software that makes <span class="em">LLM agents</span> <span class="lime">useful</span> in real products.</h1>
+
+      <div class="hero-foot">
+        <p class="lead">I'm <b>Harikrishnan Aneesh</b>, a software engineer at <b>Intbox.ai</b>, which turns business WhatsApp conversations into data you can search and question. I work on <b>agents and evals</b>, <b>billing</b>, <b>offline sync</b> and <b>encrypted chat</b>, in Dart, Rust, C and SQL.</p>
+        <div class="hero-side">
+          <div class="where"><span>↳ Based in Kochi, India</span><span class="live">Open to new roles</span></div>
+          <div class="actions">
+            <button class="btn primary" type="button" data-copy>Copy email <span class="arr">→</span></button>
+            <a class="btn" href="https://github.com/hariikr">GitHub</a>
+            <a class="btn" href="https://linkedin.com/in/harikrishnan-aneesh-823087216/">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="marquee" aria-label="Technologies I use">
+    <div class="track">
+      <span>Flutter</span><span>Dart</span><span>Rust</span><span>Supabase</span><span>PostgreSQL</span><span>tool calling</span><span>Gemini API</span><span>Evals</span><span>Drift</span><span>flutter_rust_bridge</span><span>Razorpay</span><span>Matrix E2EE</span><span>FFmpeg</span><span>PostHog</span><span>Edge Functions</span>
+      <span aria-hidden="true">Flutter</span><span aria-hidden="true">Dart</span><span aria-hidden="true">Rust</span><span aria-hidden="true">Supabase</span><span aria-hidden="true">PostgreSQL</span><span aria-hidden="true">tool calling</span><span aria-hidden="true">Gemini API</span><span aria-hidden="true">Evals</span><span aria-hidden="true">Drift</span><span aria-hidden="true">flutter_rust_bridge</span><span aria-hidden="true">Razorpay</span><span aria-hidden="true">Matrix E2EE</span><span aria-hidden="true">FFmpeg</span><span aria-hidden="true">PostHog</span><span aria-hidden="true">Edge Functions</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="band" id="about" aria-labelledby="about-h">
+      <div class="eyebrow" data-r>About</div>
+      <h2 class="big" id="about-h" data-r>An engineer who cares whether the answer is <span class="em lime">right</span>, and what it cost.</h2>
+      <div class="about-grid">
+        <p class="say" data-r>I like work where correctness can be measured: <span class="em">evals</span> for agents, <span class="em">invoices</span> that add up, and sync that survives a dead network.</p>
+        <div class="about-side" data-r>
+          <p>For the past year I have shipped on <b>Intbox.ai</b> across a Flutter app for macOS, Windows, iOS and Android, a Rust chat backend and a Supabase database.</p>
+          <p>Outside work I run a <b>hotel expense tracker</b> that my mother uses every day, which is where I test ideas against a real, unforgiving user.</p>
+        </div>
+      </div>
+
+      <div class="stats" data-r>
+        <div class="stat"><span class="num" data-to="1">1</span><span class="lbl">Year in production</span></div>
+        <div class="stat"><span class="num" data-to="400" data-suf="+">400+</span><span class="lbl">Commits on Intbox</span></div>
+      </div>
+
+      <dl class="facts" data-r>
+        <div class="fact"><dt>Location</dt><dd>Kochi, Kerala, India · IST</dd></div>
+        <div class="fact"><dt>Status</dt><dd><span class="live">Open to new roles</span></dd></div>
+        <div class="fact"><dt>Roles</dt><dd>AI engineer · Forward deployed engineer · Software engineer</dd></div>
+        <div class="fact"><dt>Stack</dt><dd>Flutter · Rust · Supabase · PostgreSQL</dd></div>
+        <div class="fact"><dt>Currently</dt><dd>Software Engineer @ Intbox.ai</dd></div>
+      </dl>
+    </section>
+
+    <section class="band" id="stack" aria-labelledby="stack-h">
+      <div class="eyebrow" data-r>The stack</div>
+      <h2 class="big" id="stack-h" data-r>What I <span class="em lime">reach for</span>.</h2>
+      <div class="stack-grid" data-r>
+        <div class="srow"><span class="ix">/01</span><h3>Dart &amp; Flutter</h3><p>macOS · Windows · iOS · Android</p></div>
+        <div class="srow"><span class="ix">/02</span><h3>Rust &amp; C</h3><p>flutter_rust_bridge · dart:ffi · FFmpeg</p></div>
+        <div class="srow"><span class="ix">/03</span><h3>Supabase &amp; PostgreSQL</h3><p>RLS · RPCs · triggers · Edge Functions</p></div>
+        <div class="srow"><span class="ix">/04</span><h3>LLM agents</h3><p>tool calling · model routing · tracing</p></div>
+        <div class="srow"><span class="ix">/05</span><h3>Evals</h3><p>SQL-agent harness on PostHog data</p></div>
+        <div class="srow"><span class="ix">/06</span><h3>Offline-first</h3><p>Drift · SQLite · two-way sync</p></div>
+        <div class="srow"><span class="ix">/07</span><h3>Payments</h3><p>Razorpay checkout · webhooks · invoices</p></div>
+        <div class="srow"><span class="ix">/08</span><h3>Security</h3><p>Matrix E2EE · JWT checks · least privilege</p></div>
+      </div>
+    </section>
+
+    <section class="band" id="experience" aria-labelledby="exp-h">
+      <div class="eyebrow" data-r>Experience</div>
+      <h2 class="big" id="exp-h" data-r>A year of <span class="em lime">shipping</span>.</h2>
+      <div class="tl">
+        <article class="job" data-r>
+          <div class="when">Oct 2025 — <span class="now">Now</span></div>
+          <div>
+            <h3>Software <span class="em">Engineer</span></h3>
+            <div class="org">Intbox.ai (formerly Zeldin) · Kochi</div>
+            <ul>
+              <li><span><b>Agents and evals:</b> tool-calling agents that answer questions over users' business data, and a SQL-agent eval harness on PostHog data</span></li>
+              <li><span><b>LLM gateway:</b> a proxy with model routing, request tracing and per-user usage metering</span></li>
+              <li><span><b>Billing:</b> owned from the first schema through three redesigns, with pricing functions, Razorpay webhooks, credits, coupons, seats and trials</span></li>
+              <li><span><b>Offline sync:</b> Drift repositories with two-way Supabase sync, soft deletes and timestamp conflict rules</span></li>
+              <li><span><b>Encrypted chat:</b> a Rust backend over flutter_rust_bridge, Matrix E2EE flows and an FFmpeg media pipeline</span></li>
+            </ul>
+          </div>
+        </article>
+        <article class="job" data-r>
+          <div class="when">Jul — Sep 2025</div>
+          <div>
+            <h3>Full Stack <span class="em">Intern</span></h3>
+            <div class="org">Coligo · FinTech</div>
+            <ul>
+              <li><span>Finance features for Manappuram Finance and Muthoot in React, Node.js, Express.js and MySQL</span></li>
+              <li><span>A lead management system deployed on AWS with GitHub Actions CI/CD</span></li>
+            </ul>
+          </div>
+        </article>
+        <article class="job" data-r>
+          <div class="when">2021 — 2025</div>
+          <div>
+            <h3>B.Tech, <span class="em">Computer Science</span></h3>
+            <div class="org">CUSAT · Kochi</div>
+            <ul><li><span>Cochin University of Science and Technology, First Class</span></li></ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="band" id="work" aria-labelledby="work-h">
+      <div class="eyebrow" data-r>Selected work</div>
+      <h2 class="big" id="work-h" data-r>Systems I've <span class="em lime">shipped</span>.</h2>
+      <div class="work">
+
+        <article class="case" data-r>
+          <div class="win">
+            <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><span class="url">intbox.ai / agents</span></div>
+            <figure class="dg" aria-label="Diagram: the app sends requests to an LLM proxy that routes, traces and meters them before reaching model A or model B">
+              <svg viewBox="0 0 300 170" role="img">
+                <defs><marker id="a1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 L8 4 L0 8 z"/></marker></defs>
+                <rect x="8" y="65" width="62" height="40" rx="6"/><text x="39" y="89" text-anchor="middle">App</text>
+                <line class="ln hi flow" x1="70" y1="85" x2="98" y2="85" marker-end="url(#a1)"/>
+                <rect class="hi" x="100" y="38" width="100" height="94" rx="8"/>
+                <text x="150" y="60" text-anchor="middle">LLM proxy</text>
+                <text class="m" x="150" y="84" text-anchor="middle">route</text>
+                <text class="m" x="150" y="102" text-anchor="middle">trace</text>
+                <text class="m" x="150" y="120" text-anchor="middle">meter</text>
+                <line class="ln flow" x1="200" y1="66" x2="228" y2="60" marker-end="url(#a1)"/>
+                <line class="ln flow" x1="200" y1="104" x2="228" y2="110" marker-end="url(#a1)"/>
+                <rect x="230" y="42" width="64" height="36" rx="6"/><text x="262" y="64" text-anchor="middle">Model A</text>
+                <rect x="230" y="92" width="64" height="36" rx="6"/><text x="262" y="114" text-anchor="middle">Model B</text>
+                <text class="m" x="150" y="158" text-anchor="middle">per-user usage logged for every call</text>
+              </svg>
+            </figure>
+          </div>
+          <div class="txt">
+            <span class="cat">— Intbox.ai · AI</span>
+            <h3>Agents &amp; <span class="em">evals</span></h3>
+            <div class="chips"><span>Dart</span><span>Tool calling</span><span>Evals</span><span>PostHog</span></div>
+            <p>People ask questions over data pulled from their chats, so answers have to be right and costs have to be visible.</p>
+            <ul>
+              <li>Tool-calling agents for location and inventory search, with caching and feedback</li>
+              <li>An eval harness for the SQL agent, built on PostHog data</li>
+              <li>An LLM proxy that routes models, traces requests and meters usage per user</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="case" data-r>
+          <div class="win">
+            <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><span class="url">intbox.ai / billing</span></div>
+            <figure class="dg" aria-label="Diagram: plan, seats, credits and coupon combine into an invoice, paid through Razorpay, confirmed by webhook">
+              <svg viewBox="0 0 300 170" role="img">
+                <defs><marker id="a2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 L8 4 L0 8 z"/></marker></defs>
+                <rect x="8" y="16" width="66" height="24" rx="5"/><text x="41" y="32" text-anchor="middle">plan</text>
+                <rect x="8" y="48" width="66" height="24" rx="5"/><text x="41" y="64" text-anchor="middle">seats</text>
+                <rect x="8" y="80" width="66" height="24" rx="5"/><text x="41" y="96" text-anchor="middle">credits</text>
+                <rect x="8" y="112" width="66" height="24" rx="5"/><text x="41" y="128" text-anchor="middle">coupon</text>
+                <path class="ln" d="M74 28 L108 76"/><path class="ln" d="M74 60 L108 78"/><path class="ln" d="M74 92 L108 82"/><path class="ln" d="M74 124 L108 84" marker-end="url(#a2)"/>
+                <rect class="hi" x="110" y="62" width="72" height="36" rx="6"/><text x="146" y="84" text-anchor="middle">invoice</text>
+                <line class="ln flow" x1="182" y1="74" x2="210" y2="50" marker-end="url(#a2)"/>
+                <rect x="212" y="26" width="80" height="30" rx="6"/><text x="252" y="45" text-anchor="middle">Razorpay</text>
+                <line class="ln hi flow" x1="252" y1="56" x2="252" y2="108" marker-end="url(#a2)"/>
+                <text class="m" x="246" y="86" text-anchor="end">webhook</text>
+                <rect x="212" y="110" width="80" height="30" rx="6"/><text x="252" y="129" text-anchor="middle">paid</text>
+                <text class="m" x="150" y="162" text-anchor="middle">trial · grace · expired handled</text>
+              </svg>
+            </figure>
+          </div>
+          <div class="txt">
+            <span class="cat">— Intbox.ai · Payments</span>
+            <h3>Billing &amp; <span class="em">subscriptions</span></h3>
+            <div class="chips"><span>PostgreSQL</span><span>Supabase RPC</span><span>Razorpay</span><span>Flutter</span></div>
+            <p>Plans, seats, credits, coupons and trials all have to add up to one correct invoice. I owned it from the first schema to its third redesign.</p>
+            <ul>
+              <li>PostgreSQL pricing functions behind Supabase RPCs</li>
+              <li>Razorpay checkout, webhooks and invoice status polling</li>
+              <li>Seat upgrades plus trial, grace-period and expiry states</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="case" data-r>
+          <div class="win">
+            <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><span class="url">intbox.ai / sync</span></div>
+            <figure class="dg" aria-label="Diagram: the device writes to a local SQLite database and an outbox, pushing to and pulling from Supabase Postgres">
+              <svg viewBox="0 0 300 170" role="img">
+                <defs><marker id="a3" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 L8 4 L0 8 z"/></marker></defs>
+                <rect x="8" y="22" width="124" height="118" rx="8"/>
+                <text x="70" y="42" text-anchor="middle">Device</text>
+                <rect class="hi" x="22" y="54" width="96" height="32" rx="5"/><text x="70" y="74" text-anchor="middle">Drift · SQLite</text>
+                <rect x="22" y="96" width="96" height="30" rx="5"/><text x="70" y="115" text-anchor="middle">outbox</text>
+                <rect x="190" y="50" width="102" height="64" rx="8"/>
+                <text x="241" y="78" text-anchor="middle">Supabase</text>
+                <text class="m" x="241" y="96" text-anchor="middle">Postgres</text>
+                <line class="ln flow" x1="190" y1="68" x2="134" y2="72" marker-end="url(#a3)"/>
+                <text class="m" x="161" y="62" text-anchor="middle">pull</text>
+                <line class="ln hi flow" x1="132" y1="110" x2="188" y2="100" marker-end="url(#a3)"/>
+                <text class="m" x="161" y="124" text-anchor="middle">push</text>
+                <text class="m" x="150" y="160" text-anchor="middle">works offline, syncs when back online</text>
+              </svg>
+            </figure>
+          </div>
+          <div class="txt">
+            <span class="cat">— Intbox.ai · Data</span>
+            <h3>Offline-first <span class="em">sync</span></h3>
+            <div class="chips"><span>Drift</span><span>SQLite</span><span>Supabase</span><span>RBAC</span></div>
+            <p>The app keeps working without a connection and syncs cleanly once it is back.</p>
+            <ul>
+              <li>Drift (SQLite) repositories with two-way Supabase sync</li>
+              <li>Inventory, dynamic fields, units and role-based access</li>
+              <li>Rules for sync order, soft deletes and conflicts by timestamp</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="case" data-r>
+          <div class="win">
+            <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><span class="url">intbox.ai / chat</span></div>
+            <figure class="dg" aria-label="Diagram: device A sends ciphertext through the server to device B; only the devices hold keys">
+              <svg viewBox="0 0 300 170" role="img">
+                <defs><marker id="a4" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 L8 4 L0 8 z"/></marker></defs>
+                <text class="m" x="150" y="30" text-anchor="middle">Rust core: encrypt · verify · decrypt</text>
+                <rect class="hi" x="8" y="56" width="72" height="52" rx="6"/><text x="44" y="78" text-anchor="middle">Device A</text><text class="m" x="44" y="96" text-anchor="middle">holds key</text>
+                <line class="ln flow" x1="80" y1="82" x2="112" y2="82" marker-end="url(#a4)"/>
+                <rect x="114" y="56" width="72" height="52" rx="6"/><text x="150" y="78" text-anchor="middle">Server</text><text class="m" x="150" y="96" text-anchor="middle">ciphertext</text>
+                <line class="ln flow" x1="186" y1="82" x2="218" y2="82" marker-end="url(#a4)"/>
+                <rect class="hi" x="220" y="56" width="72" height="52" rx="6"/><text x="256" y="78" text-anchor="middle">Device B</text><text class="m" x="256" y="96" text-anchor="middle">holds key</text>
+                <text class="m" x="150" y="140" text-anchor="middle">the server never sees plaintext</text>
+              </svg>
+            </figure>
+          </div>
+          <div class="txt">
+            <span class="cat">— Intbox.ai · Security</span>
+            <h3>Encrypted <span class="em">chat</span></h3>
+            <div class="chips"><span>Rust</span><span>C</span><span>FFmpeg</span><span>Matrix</span></div>
+            <p>Messages and files stay readable only on the user's own devices.</p>
+            <ul>
+              <li>Chat operations moved into a Rust backend over flutter_rust_bridge</li>
+              <li>Matrix E2EE: key backup, device verification, decryption</li>
+              <li>Media pipeline on FFmpeg through dart:ffi, with PDF text extraction</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="case" data-r>
+          <div class="win">
+            <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><span class="url">github.com/hariikr/Hotel-Expense-Tracker</span></div>
+            <figure class="dg" aria-label="Architecture diagram: the Flutter app on Android, with on-device voice in Malayalam, reads and writes data in Supabase Postgres under row-level security, where triggers compute profit. For AI it calls a Supabase Edge Function that checks the login token, asks Gemini 3, and runs one of 8 tools against Postgres.">
+              <svg viewBox="0 0 300 170" role="img">
+                <defs><marker id="a5" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 L8 4 L0 8 z"/></marker></defs>
+                <rect x="110" y="4" width="116" height="146" rx="10" style="fill:none;stroke-dasharray:4 3"/>
+                <rect class="hi" x="8" y="30" width="78" height="100" rx="8"/>
+                <text x="47" y="58" text-anchor="middle">Flutter</text>
+                <text class="m" x="47" y="78" text-anchor="middle">Android</text>
+                <text class="m" x="47" y="94" text-anchor="middle">voice + TTS</text>
+                <text class="m" x="47" y="110" text-anchor="middle">ML · EN</text>
+                <rect class="hi" x="120" y="14" width="96" height="46" rx="6"/>
+                <text x="168" y="34" text-anchor="middle">Postgres</text>
+                <text class="m" x="168" y="50" text-anchor="middle">RLS · triggers</text>
+                <rect x="120" y="96" width="96" height="46" rx="6"/>
+                <text x="168" y="116" text-anchor="middle">Edge Fn</text>
+                <text class="m" x="168" y="132" text-anchor="middle">checks JWT</text>
+                <rect x="236" y="96" width="58" height="46" rx="6"/>
+                <text x="265" y="116" text-anchor="middle">Gemini 3</text>
+                <text class="m" x="265" y="132" text-anchor="middle">8 tools</text>
+                <line class="ln hi flow" x1="86" y1="52" x2="118" y2="38" marker-end="url(#a5)"/>
+                <text class="m" x="99" y="34" text-anchor="middle">data</text>
+                <line class="ln flow" x1="86" y1="112" x2="118" y2="119" marker-end="url(#a5)"/>
+                <text class="m" x="101" y="105" text-anchor="middle">AI</text>
+                <line class="ln flow" x1="216" y1="119" x2="234" y2="119" marker-end="url(#a5)"/>
+                <line class="ln hi flow" x1="168" y1="96" x2="168" y2="62" marker-end="url(#a5)"/>
+                <text class="m" x="174" y="83">tools</text>
+                <text class="m" x="168" y="164" text-anchor="middle">Supabase</text>
+              </svg>
+            </figure>
+          </div>
+          <div class="txt">
+            <span class="cat">— Personal project · Daily use</span>
+            <h3><a href="https://github.com/hariikr/Hotel-Expense-Tracker">Hotel <span class="em">expense tracker</span></a></h3>
+            <div class="chips"><span>Flutter</span><span>Supabase</span><span>PostgreSQL</span><span>Gemini API</span></div>
+            <p>Built for my mother's hotel. She logs every day's income and expenses in it, with more than 2,300 entries so far.</p>
+            <ul>
+              <li>Malayalam voice assistant: Gemini 3 picks from 8 database tools to answer profit questions and log entries</li>
+              <li>Edge Functions trust only a verified token; RLS and locked-down SQL functions guard each account</li>
+              <li>Profit kept by PostgreSQL triggers, with PDF bills and shareable daily, weekly and monthly reports</li>
+            </ul>
+            <a class="go" href="https://github.com/hariikr/Hotel-Expense-Tracker">View on GitHub →</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </div>
+
+  <section class="contact" id="contact" aria-labelledby="ct-h">
+    <div class="wrap">
+      <div class="eyebrow" data-r>— Open to new roles</div>
+      <h2 id="ct-h" data-r>Building with LLM agents? Let's make them <span class="em lime">reliable</span>.</h2>
+      <button class="mail" type="button" data-copy data-r><span class="t" id="email">harikrishnananish0@gmail.com</span><span class="arr">→</span></button>
+      <div class="links" data-r>
+        <a href="https://github.com/hariikr">github.com/hariikr</a>
+        <a href="https://linkedin.com/in/harikrishnan-aneesh-823087216/">linkedin.com/in/harikrishnan-aneesh</a>
+        <span>Kochi, India · IST</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>© 2026 — Harikrishnan Aneesh</span><span>Flutter · Rust · Supabase</span></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var EMAIL = 'harikrishnananish0@gmail.com';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = window.matchMedia('(pointer: fine)').matches;
+
+  /* loader: counts to 100, never blocks the page for more than 2.5s */
+  var loader = document.getElementById('loader');
+  function hideLoader() { if (loader) loader.classList.add('done'); }
+  if (!reduce && loader) {
+    var pct = document.getElementById('pct'), fill = document.getElementById('fill'), t0 = performance.now(), dur = 1100;
+    var tick = function (now) {
+      var p = Math.min(1, (now - t0) / dur), v = Math.round((1 - Math.pow(1 - p, 3)) * 100);
+      pct.textContent = String(v).padStart(3, '0'); fill.style.width = v + '%';
+      if (p < 1) requestAnimationFrame(tick); else setTimeout(hideLoader, 180);
+    };
+    requestAnimationFrame(tick);
+    setTimeout(hideLoader, 2500);
+  } else { hideLoader(); }
+
+  /* toast + copy email */
+  var toast = document.getElementById('toast'), tt;
+  function say(t) { toast.textContent = t; toast.classList.add('show'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('show'); }, 2400); }
+  function selectEmail() { var el = document.getElementById('email'), r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  document.querySelectorAll('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      try {
+        navigator.clipboard.writeText(EMAIL).then(function () { say('Email copied'); }, function () { selectEmail(); say('Press Ctrl+C to copy'); });
+      } catch (e) { selectEmail(); say('Press Ctrl+C to copy'); }
+    });
+  });
+
+  /* mobile menu */
+  var btn = document.getElementById('menuBtn'), ov = document.getElementById('overlay');
+  function setMenu(open) {
+    ov.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    ov.querySelectorAll('ol a').forEach(function (a, i) { a.style.transitionDelay = open ? (80 + i * 55) + 'ms' : '0ms'; });
+  }
+  btn.addEventListener('click', function () { setMenu(!ov.classList.contains('open')); });
+  ov.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+
+  /* scroll progress + active nav */
+  var bar = document.getElementById('progress');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+  var secs = navLinks.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function onScroll() {
+    var h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.transform = 'scaleX(' + (h > 0 ? scrollY / h : 0) + ')';
+    var y = scrollY + 140, cur = -1;
+    secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top + scrollY <= y) cur = i; });
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = secs.length - 1;
+    navLinks.forEach(function (a, i) { a.classList.toggle('on', i === cur); });
+  }
+  addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); onScroll();
+
+  /* reveal: offset only what starts below the fold */
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.remove('pre'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('[data-r]').forEach(function (el) {
+      if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('rv', 'pre'); io.observe(el); }
+    });
+  }
+
+  /* count-up stats when they enter the view */
+  if (!reduce && 'IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return; cio.unobserve(e.target);
+        var el = e.target, to = +el.dataset.to, suf = el.dataset.suf || '', s = performance.now(), d = 1500;
+        var step = function (now) {
+          var p = Math.min(1, (now - s) / d), v = Math.round(to * (1 - Math.pow(1 - p, 3)));
+          el.textContent = v.toLocaleString('en-IN') + (p === 1 ? suf : ''); if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }, { threshold: .5 });
+    document.querySelectorAll('.num[data-to]').forEach(function (n) { cio.observe(n); });
+  }
+
+  /* cursor follower: dot snaps, ring eases; it inverts headings and rings links */
+  var dot = document.getElementById('dot'), ring = document.getElementById('ring');
+  var mx = -100, my = -100, rx = -100, ry = -100;
+  if (fine && !reduce) {
+    addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; dot.style.transform = 'translate(' + mx + 'px,' + my + 'px)'; }, { passive: true });
+    var follow = function () {
+      rx += (mx - rx) * .16; ry += (my - ry) * .16;
+      ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+      requestAnimationFrame(follow);
+    };
+    requestAnimationFrame(follow);
+    document.addEventListener('mouseover', function (e) {
+      var t = e.target, head = !!t.closest('h1, h2');
+      ring.classList.toggle('big', head);
+      ring.classList.toggle('link', !head && !!t.closest('a, button'));
+    });
+  }
+
+  /* background field: grid, drifting nodes joined by lines, floating code words, mouse spotlight */
+  var cv = document.getElementById('field'), ctx = cv.getContext('2d');
+  var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 1.5), nodes = [], toks = [], running = true;
+  var WORDS = ['await', 'fn()', 'SELECT', '=>', 'tool_call', 'rls', 'impl', '{ }', 'async', 'JOIN', 'sync()', 'eval', 'Ok(())', '0x1f', 'jwt', 'Stream'];
+  var pmx = -9999, pmy = -9999;
+  function size() {
+    W = innerWidth; H = innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.min(70, Math.round(W * H / 24000)), i;
+    nodes = []; for (i = 0; i < n; i++) nodes.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25 });
+    toks = []; for (i = 0; i < Math.min(16, Math.round(W / 90)); i++) toks.push({ x: Math.random() * W, y: Math.random() * H, v: .12 + Math.random() * .2, w: WORDS[i % WORDS.length], a: .05 + Math.random() * .08 });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    var g = 64, off = (scrollY * .15) % g, x, y, i, k;
+    ctx.strokeStyle = 'rgba(240,244,236,0.035)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (x = 0.5; x < W; x += g) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (y = -off + .5; y < H; y += g) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+    if (pmx > -999) {
+      var rg = ctx.createRadialGradient(pmx, pmy, 0, pmx, pmy, 280);
+      rg.addColorStop(0, 'rgba(196,255,77,0.07)'); rg.addColorStop(1, 'rgba(196,255,77,0)');
+      ctx.fillStyle = rg; ctx.fillRect(pmx - 280, pmy - 280, 560, 560);
+    }
+    ctx.font = '12px "JetBrains Mono", monospace';
+    toks.forEach(function (t) { ctx.fillStyle = 'rgba(196,255,77,' + t.a + ')'; ctx.fillText(t.w, t.x, t.y); });
+    for (i = 0; i < nodes.length; i++) {
+      var a = nodes[i];
+      for (k = i + 1; k < nodes.length; k++) {
+        var b = nodes[k], dx = a.x - b.x, dy = a.y - b.y, d = dx * dx + dy * dy;
+        if (d < 17000) { ctx.strokeStyle = 'rgba(240,244,236,' + (0.09 * (1 - d / 17000)) + ')'; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+      }
+      var mdx = a.x - pmx, mdy = a.y - pmy, md = mdx * mdx + mdy * mdy;
+      if (md < 32000) { ctx.strokeStyle = 'rgba(196,255,77,' + (0.35 * (1 - md / 32000)) + ')'; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(pmx, pmy); ctx.stroke(); }
+      ctx.fillStyle = md < 32000 ? 'rgba(196,255,77,0.9)' : 'rgba(240,244,236,0.35)';
+      ctx.beginPath(); ctx.arc(a.x, a.y, 1.4, 0, 6.283); ctx.fill();
+    }
+  }
+  function step() {
+    if (!running) return;
+    nodes.forEach(function (n) {
+      n.x += n.vx; n.y += n.vy;
+      var dx = pmx - n.x, dy = pmy - n.y, d = dx * dx + dy * dy;
+      if (d < 32000 && d > 400) { n.x += dx * .0025; n.y += dy * .0025; }
+      if (n.x < -10) n.x = W + 10; if (n.x > W + 10) n.x = -10; if (n.y < -10) n.y = H + 10; if (n.y > H + 10) n.y = -10;
+    });
+    toks.forEach(function (t) { t.y -= t.v; if (t.y < -20) { t.y = H + 20; t.x = Math.random() * W; } });
+    draw(); requestAnimationFrame(step);
+  }
+  size();
+  addEventListener('resize', function () { size(); if (reduce) draw(); });
+  if (fine) addEventListener('mousemove', function (e) { pmx = e.clientX; pmy = e.clientY; }, { passive: true });
+  if (reduce) { draw(); }
+  else {
+    requestAnimationFrame(step);
+    document.addEventListener('visibilitychange', function () { var was = running; running = !document.hidden; if (running && !was) requestAnimationFrame(step); });
+  }
+})();
+</script>
+</body>
+</html>
